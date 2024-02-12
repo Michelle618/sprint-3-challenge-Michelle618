@@ -57,9 +57,10 @@
     getEvens() {
       return this.ints.filter(num => num % 2 === 0);
     }
-    get negatives() {
-      return this.ints.filter(num => num < 0); 
+    getNegatives() {
+      return this.ints.filter(num => num< 0); 
     }
+    
     getAllSquared () {
       return this.ints.map(num => num * num);
     }
@@ -109,11 +110,11 @@
       }
 
       reload() {
-        if (typeOf !== "number" || amount <= 0) {
+        if (typeof currentCapacity !== "number" || currentCapacity <= 0) {
           return "Error reloading!";
         }
-        this.currentCapacity = Math.min(this.totalCapacity, this.currentCapacity + amount) ;
-        return  `${number} projectiles left!` ;
+        this.currentCapacity = (this.totalCapacity--) ;
+        return  `${this.currentCapacity}} projectiles left!` ;
       }
       toggleSafety (safetyOn) {
         this.safetyOn = !this.safetyOn;
@@ -173,21 +174,15 @@
       constructor(...antNames) {
         this.ants = antNames.map(name =>({ name, health: 100 }));
       }
+    
       work() {
-        if ( this.ants.length === 0) {
-          return "No ants here. Did you work them to death?";
-        }
-        this.ants.forEach(ant => {
-          ant.health -= 20;
-          if(ant.health <= 0) {
-            this.ants = this.ants.filter(a => a !== ant);
-          }
-        });
-        return `${this.ants.length} ants starting work!`;
+        this.ants = this.ants.map(ant => ({ ...ant, health: ant.health - 20})).filter(ant => ant.health > 0);
+          return this.ants.length ? `${this.ants.length} ants starting work!`: "No ants here. Did you work them to death?"
       }
       feed(name) {
-        const ant = this.ant.find(ant => ant.name === name);
-        if (ant) {ant.health += 15;
+        const antExists = this.ants.some(ant => ant.name === name);
+        if (antExists) {
+          this.ants = this.ants.map(ant => ant.name === name ? { ...ant, health: ant.health + 15} : ant);
         return "Yum!";
       } else {
         return `${ name } not found!`;
