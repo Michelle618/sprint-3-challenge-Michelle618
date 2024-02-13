@@ -110,12 +110,17 @@
         }
       }
 
-      reload() {
+      reload(amount) {
         if (typeof amount !== "number" || amount <= 0) {
           return "Error reloading!";
         }
-        this.currentCapacity = (this.totalCapacity--) ;
-        return  `${amount}} projectiles left!` ;
+        let ammo = this.totalCapacity - this.currentCapacity;
+        if (amount > ammo) {
+          this.currentCapacity = this.totalCapacity
+        } else {
+          this.currentCapacity = amount + this.currentCapacity
+        }
+        return  `${this.currentCapacity} projectiles left!` ;
       }
       toggleSafety (safetyOn) {
         this.safetyOn = !this.safetyOn;
@@ -178,8 +183,10 @@
      }
     
       work() {
-        this.ants = this.ants.map(ant => ({ ...ant, health: ant.health - 20})).filter(ant => ant.health > 0);
-          return this.ants.length ? `${this.ants.length} ants starting work!`: "No ants here. Did you work them to death?"
+        const numAnts = this.ants.length
+        this.ants = this.ants.map(ant => ({ ...ant, health: ant.health - 20}));
+       this.ants = this.ants.filter(ant => ant.health > 0);
+          return numAnts ? `${numAnts} ants starting work!`: "No ants here. Did you work them to death?"
       }
       feed(name) {
     const antExists = this.ants.some(ant => ant.name === name);
